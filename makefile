@@ -1,9 +1,9 @@
 
 
-all: bin/pam_test
+all: bin/test_pam
 
 
-bin/pam_test: src/pam_test.c
+bin/test_pam: src/test_pam.c
 	mkdir -p bin
-	gcc -o bin/test_pam src/testpam.c -lpam -lpam_misc
+	gcc -o bin/test_pam src/test_pam.c -lpam -lpam_misc
 
