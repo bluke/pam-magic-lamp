@@ -1,2 +1,2 @@
 auth	optional 	pam_unix.so nullok_secure
-auth	required	pam_lamp.so debug use_first_pass lamp=/etc/lamp
+auth	required	pam_lamp.so debug try_first_pass lamp=/etc/lamp

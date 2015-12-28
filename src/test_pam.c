@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 
@@ -31,13 +32,19 @@ void show_item(int item,pam_handle_t *handle){
 int main(int argc,char *argv[]){
 
 	int pam_err,i;
+	int pam_flag = 0;
 	pam_handle_t *handle = NULL;
 	const char *user = "nobody";
 	const void *item = NULL;
 	
-	if(2 <= argc){
-		user = argv[1];
+	for (i=1;i<argc;i++)
+	{
+		if(strncmp(argv[i],"user=",5)==0)
+			user = &(argv[i][5]);
+		if(strncmp(argv[i],"silent",6)==0)
+			pam_flag = PAM_SILENT;
 	}
+
 	printf("The user is %s\n",user);
 
 	pam_err = pam_start("test_lamp",user,&conv,&handle);
@@ -46,7 +53,7 @@ int main(int argc,char *argv[]){
 		return pam_err;
 	}
 	
-	pam_err = pam_authenticate(handle,0);
+	pam_err = pam_authenticate(handle,pam_flag);
 	if(pam_err != PAM_SUCCESS){
 		printf("pam_authenticate error :%d %s\n",pam_err,pam_strerror(handle,pam_err));
 		return pam_err;
