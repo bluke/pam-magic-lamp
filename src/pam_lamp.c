@@ -1,5 +1,6 @@
 #define PAM_SM_AUTH
 
+#include <stdlib.h>
 #include <syslog.h>
 #include <string.h>
 #include <security/pam_modules.h>
@@ -44,9 +45,10 @@ static const struct opt *parse_options(struct opt *res,int argc,const char **arg
 }
 
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv){
-	int pam_err=-1;
+	int pam_err=PAM_ABORT;
 	char *token=NULL;
-	struct opt *opts,options;
+	const char *user=NULL;
+	struct opt *opts=NULL,options;
 	opts=&options;
 	parse_options(opts,argc,argv);
 
@@ -55,12 +57,28 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
 		if(opts->lamp!=NULL)
 			pam_syslog(pamh,LOG_DEBUG,"SM_AUTH started with lamp %s",opts->lamp);
 	}
+
+	
+	if(flags&PAM_SILENT){
+		pam_err = pam_get_item(pamh,PAM_USER,(const void **)&user);
+		if(pam_err != PAM_SUCCESS){
+			return pam_err;
+		}
+	}
+	else{
+		pam_err = pam_get_user(pamh,&user,NULL);
+		if(pam_err != PAM_SUCCESS){
+			return pam_err;
+		}
+	}
+	
 	
 	if(opts->use_first_pass!=NULL||opts->try_first_pass!=NULL){
 		pam_err = pam_get_item(pamh,PAM_AUTHTOK,(const void**)&token);
 		if(pam_err==PAM_SUCCESS)
 			if(strcmp(token,"aladdin")==0){
-				return PAM_SUCCESS;
+				pam_err = pam_set_data(pamh,"lamp_auth_user",(void*)user,NULL);
+				return pam_err;
 			}
 			else{
 				pam_err=PAM_AUTH_ERR;
@@ -71,7 +89,8 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
 		pam_err=pam_prompt(pamh,PAM_PROMPT_ECHO_OFF,&token,"Who disturbs my slumber ? ");
 		if(pam_err == PAM_SUCCESS){
 			if(strcmp(token,"aladdin")==0){
-				return PAM_SUCCESS;
+				pam_err = pam_set_data(pamh,"lamp_auth_user",(void*)user,NULL);
+				return pam_err;
 			}
 			else{
 				pam_err=PAM_AUTH_ERR;
