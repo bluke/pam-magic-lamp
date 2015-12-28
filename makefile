@@ -4,11 +4,11 @@ all: bin/test_pam lib/security/pam_lamp.so
 
 install: lib/security/pam_lamp.so
 	cp lib/security/pam_lamp.so /lib/security/pam_lamp.so
-	cp etc/pam.d/test_lamp /etc/pam.d
+	cp etc/pam.d/test_pam /etc/pam.d
 
 uninstall: 
 	rm /lib/security/pam_lamp.so
-	rm /etc/pam.d/test_lamp
+	rm /etc/pam.d/test_pam
 
 bin/test_pam: src/test_pam.c
 	mkdir -p bin

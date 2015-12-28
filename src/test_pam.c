@@ -47,7 +47,7 @@ int main(int argc,char *argv[]){
 
 	printf("The user is %s\n",user);
 
-	pam_err = pam_start("test_lamp",user,&conv,&handle);
+	pam_err = pam_start("test_pam",user,&conv,&handle);
 	if(pam_err != PAM_SUCCESS){
 		printf("pam_start error : %d %s\n",pam_err,pam_strerror(handle,pam_err));
 		return pam_err;
