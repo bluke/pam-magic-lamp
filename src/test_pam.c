@@ -51,18 +51,22 @@ int main(int argc,char *argv[]){
 		printf("pam_authenticate error :%d %s\n",pam_err,pam_strerror(handle,pam_err));
 		return pam_err;
 	}
+	else{
+		printf("Authentication succesful !!\n");
+	}
 
-	pam_err = pam_acct_mgmt(handle,0);
+
+	/*pam_err = pam_acct_mgmt(handle,0);
 	if(pam_err != PAM_SUCCESS){
 		printf("pam_acct_management error :%d %s\n",pam_err,pam_strerror(handle,pam_err));
 		return pam_err;
-	}
-
+	
+	
 	for(i=1;i<7;i++){
 		printf("Now looking up : %s\n",item_msg[i]);
 		show_item(i,handle);
 	}
-
+	*/
 	pam_err = pam_end(handle,pam_err);
 	return pam_err;
 }

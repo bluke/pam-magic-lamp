@@ -1,4 +1,5 @@
 bin/**
+lib/**
 
 # Object files
 *.o
